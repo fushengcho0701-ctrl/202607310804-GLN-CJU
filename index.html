@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>景點許願池 Wishpool</title>
+    <style>
+        :root {
+            --primary-color: #4a7c59;
+            --secondary-color: #68b0ab;
+            --bg-color: #faf8f5;
+            --card-bg: #ffffff;
+            --text-color: #2f3e46;
+            --text-light: #6c757d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Tabs 導覽列 */
+        .tabs-container {
+            max-width: 800px;
+            margin: 20px auto 0 auto;
+            display: flex;
+            background: #ededed;
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-light);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--card-bg);
+            color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* 內容區域 */
+        .content-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 16px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Tab 1: 表單樣式 */
+        .wish-form-card {
+            background: var(--card-bg);
+            padding: 30px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .wish-form-card h2 {
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--secondary-color);
+        }
+
+        .submit-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #3b6347;
+        }
+
+        .submit-btn:disabled {
+            background: #a5c4ae;
+            cursor: not-allowed;
+        }
+
+        /* Tab 2: 許願池清單卡片樣式 */
+        .pool-grid {
+            display: block;
+        }
+
+        .spot-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+            border: 1px solid #f0e9df;
+        }
+
+        .spot-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            background-color: #eaeaea;
+        }
+
+        .spot-info {
+            padding: 20px;
+        }
+
+        .spot-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .spot-detail {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .spot-detail span.label {
+            font-weight: bold;
+            min-width: 75px;
+            color: var(--primary-color);
+        }
+
+        .spot-detail span.value {
+            flex: 1;
+        }
+
+        .ig-link-btn {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 8px 16px;
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* 系統提示 & Loading */
+        .loading-spinner {
+            display: none;
+            margin: 20px auto;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0,0,0,0.1);
+            border-left-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-message {
+            text-align: center;
+            color: var(--text-light);
+            padding: 40px 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>✨ 景點許願池 ✨</h1>
+        <p>丟入 Google Maps / Naver / IG 連結，自動為你收納美好去處</p>
+    </header>
+
+    <div class="tabs-container">
+        <button class="tab-btn active" onclick="switchTab('tab1')">我要許願</button>
+        <button class="tab-btn" onclick="switchTab('tab2')">許願池清單</button>
+    </div>
+
+    <div class="content-container">
+        
+        <div id="tab1" class="tab-content active">
+            <div class="wish-form-card">
+                <h2>貼上你想去的景點網址</h2>
+                <div class="input-group">
+                    <input type="url" id="spotUrl" placeholder="請在此處貼上 Google 地圖、Naver 或 IG 連結..." required>
+                </div>
+                <button class="submit-btn" id="submitBtn" onclick="submitWish()">投進許願池</button>
+                <div class="loading-spinner" id="formLoading"></div>
+            </div>
+        </div>
+
+        <div id="tab2" class="tab-content">
+            <div class="loading-spinner" id="listLoading" style="display: block;"></div>
+            <div class="pool-grid" id="poolGrid">
+                </div>
+        </div>
+
+    </div>
+
+    <script>
+        // 🔗 請換成你部署好的 Google Apps Script 網頁應用程式網址
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbywOj8P2MeYQtBN5HLzE00eTUSFmpCRBWWNQkxvX6i590Vhp-nub_ll2knhQchzG6iZ/exec";
+
+        // Tab 切換邏輯
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+
+            if (tabId === 'tab2') {
+                fetchWishlist();
+            }
+        }
+
+        // Tab 1: 送出許願資料
+        function submitWish() {
+            const urlInput = document.getElementById('spotUrl');
+            const url = urlInput.value.trim();
+            const submitBtn = document.getElementById('submitBtn');
+            const loader = document.getElementById('formLoading');
+
+            if (!url) {
+                alert('請先輸入或貼上網址！');
+                return;
+            }
+
+            // 開啟 Loading 狀態
+            submitBtn.disabled = true;
+            loader.style.display = 'block';
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                mode: 'no-cors', // 配合 GAS 跨網域寫入
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: url })
+            })
+            .then(() => {
+                alert('🎉 許願成功！資料已寫入試算表！\n(因自動解析技術限制，部分細節請至試算表或列表確認)');
+                urlInput.value = ''; // 清空輸入框
+            })
+            .catch(err => {
+                console.error(err);
+                alert('許願失敗，請稍後再試。');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                loader.style.display = 'none';
+            });
+        }
+
+        // Tab 2: 抓取許願池清單並渲染
+        function fetchWishlist() {
+            const grid = document.getElementById('poolGrid');
+            const loader = document.getElementById('listLoading');
+            grid.innerHTML = '';
+            loader.style.display = 'block';
+
+            fetch(GAS_URL)
+            .then(res => res.json())
+            .then(res => {
+                if (res.status === 'success' && res.data.length > 0) {
+                    // 反轉陣列，讓最新許願的景點排在最上面
+                    const reversedData = res.data.reverse();
+                    
+                    reversedData.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'spot-card';
+                        
+                        // 處理預設圖片（防錯）
+                        const imgUrl = item.ImageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500';
+                        
+                        // 判斷是否顯示 IG 按鈕
+                        const igButtonHtml = item.InstagramLink 
+                            ? `<a href="${item.InstagramLink}" target="_blank" class="ig-link-btn">📸 查看 Instagram</a>` 
+                            : '';
+
+                        card.innerHTML = `
+                            <img class="spot-img" src="${imgUrl}" alt="${item.Name}" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500'">
+                            <div class="spot-info">
+                                <div class="spot-title">${item.Name || '未知名稱'}</div>
+                                <div class="spot-detail">
+                                    <span class="label">⏰ 營業時間：</span>
+                                    <span class="value">${item.OpeningHours || '尚未提供'}</span>
+                                </div>
+                                <div class="spot-detail">
+                                    <span class="label">📍 景點地址：</span>
+                                    <span class="value">${item.Address || '未知地址'}</span>
+                                </div>
+                                ${igButtonHtml}
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                    });
+                } else {
+                    grid.innerHTML = '<div class="empty-message">目前許願池空空如也，快去 Tab 1 許願吧！</div>';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                grid.innerHTML = '<div class="empty-message">無法載入資料，請確認 GAS 部署權限設定為「任何人」。</div>';
+            })
+            .finally(() => {
+                loader.style.display = 'none';
+            });
+        }
+    </script>
+</body>
+</html>
