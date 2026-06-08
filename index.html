@@ -184,7 +184,7 @@
             box-shadow: 0 2px 6px rgba(74, 124, 89, 0.2);
         }
 
-        /* 網格佈局：一排 5 ~ 6 張直式卡片 */
+        /* 網格佈局 */
         .pool-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -336,11 +336,11 @@
                         <label style="color: #b87d4b;">📍 設定分區（群組名稱）：</label>
                         <select id="editRegion" required>
                             <option value="" disabled selected>-- 請選擇濟州分區 --</option>
-                            <option value="濟州市區（北部）">濟州市區（北部）</option>
-                            <option value="濟州西部">濟州西部</option>
+                            <option value="濟州北部">濟州北部</option>
                             <option value="濟州東部">濟州東部</option>
+                            <option value="濟州西部">濟州西部</option>
                             <option value="濟州南部">濟州南部</option>
-                            <option value="濟州離島（牛島）">濟州離島（牛島）</option>
+                            <option value="濟州離島牛島">濟州離島牛島</option>
                         </select>
                     </div>
 
@@ -380,13 +380,13 @@
         // 🔗 換上你的 Google Apps Script 網頁應用程式網址
         const GAS_URL = "https://script.google.com/macros/s/AKfycbywOj8P2MeYQtBN5HLzE00eTUSFmpCRBWWNQkxvX6i590Vhp-nub_ll2knhQchzG6iZ/exec";
 
-        // 🚀 定義固定的分區渲染順序
+        // 🚀 這裡的排列順序也同步修改為最新版本
         const REGION_ORDER = [
-            "濟州市區（北部）",
-            "濟州西部",
+            "濟州北部",
             "濟州東部",
+            "濟州西部",
             "濟州南部",
-            "濟州離島（牛島）"
+            "濟州離島牛島"
         ];
 
         function switchTab(tabId) {
@@ -513,7 +513,6 @@
                     
                     const groups = {};
                     
-                    // 將資料分組
                     res.data.forEach(item => {
                         let region = item.Region ? item.Region.trim() : '其他地區';
                         if (!region) region = '其他地區';
@@ -524,11 +523,9 @@
                         groups[region].push(item);
                     });
 
-                    // 🚀 關鍵優化：按照指定的 REGION_ORDER 順序依次渲染
-                    // 先把既有的分類按順序抓出來
+                    // 按新設定的 REGION_ORDER 排序渲染
                     let orderedRegions = REGION_ORDER.filter(r => groups[r]);
                     
-                    // 萬一試算表裡有其他漏掉沒定義的分類，補在最後面
                     Object.keys(groups).forEach(r => {
                         if (!orderedRegions.includes(r)) orderedRegions.push(r);
                     });
