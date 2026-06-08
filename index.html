@@ -380,7 +380,6 @@
         // 🔗 換上你的 Google Apps Script 網頁應用程式網址
         const GAS_URL = "https://script.google.com/macros/s/AKfycbywOj8P2MeYQtBN5HLzE00eTUSFmpCRBWWNQkxvX6i590Vhp-nub_ll2knhQchzG6iZ/exec";
 
-        // 🚀 這裡的排列順序也同步修改為最新版本
         const REGION_ORDER = [
             "濟州北部",
             "濟州東部",
@@ -514,8 +513,13 @@
                     const groups = {};
                     
                     res.data.forEach(item => {
-                        let region = item.Region ? item.Region.trim() : '其他地區';
-                        if (!region) region = '其他地區';
+                        // 🚀 核心優化：同時相容 GAS 傳過來的 大寫 Region、小寫 region 或 中文「分區」名稱！
+                        let rawRegion = item.Region || item.region || item.分區 || ''; 
+                        let region = rawRegion.toString().trim();
+                        
+                        if (!region) {
+                            region = '其他地區';
+                        }
                         
                         if (!groups[region]) {
                             groups[region] = [];
@@ -523,57 +527,27 @@
                         groups[region].push(item);
                     });
 
-                    // 按新設定的 REGION_ORDER 排序渲染
-                    let orderedRegions = REGION_ORDER.filter(r => groups[r]);
-                    
+                    let renderedAny = false;
+
+                    // 依序渲染 5 大分區
+                    REGION_ORDER.forEach(regionName => {
+                        if (groups[regionName] && groups[regionName].length > 0) {
+                            renderedAny = true;
+                            renderRegionSection(container, regionName, groups[regionName]);
+                        }
+                    });
+
+                    // 渲染其他可能因為大小寫或空格沒比對上的分區
                     Object.keys(groups).forEach(r => {
-                        if (!orderedRegions.includes(r)) orderedRegions.push(r);
+                        if (!REGION_ORDER.includes(r)) {
+                            renderedAny = true;
+                            renderRegionSection(container, r, groups[r]);
+                        }
                     });
 
-                    orderedRegions.forEach(regionName => {
-                        const groupSection = document.createElement('div');
-                        groupSection.className = 'region-group';
-                        
-                        const header = document.createElement('div');
-                        header.className = 'region-header';
-                        header.innerText = `📍 ${regionName} (${groups[regionName].length})`;
-                        groupSection.appendChild(header);
-                        
-                        const grid = document.createElement('div');
-                        grid.className = 'pool-grid';
-                        
-                        groups[regionName].reverse().forEach(item => {
-                            const card = document.createElement('div');
-                            card.className = 'spot-card';
-                            
-                            const imgUrl = item.ImageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500';
-                            const igBtn = item.InstagramLink ? `<a href="${item.InstagramLink}" target="_blank" class="link-btn btn-ig">📸 IG</a>` : '';
-                            const mapBtn = item.OriginalLink ? `<a href="${item.OriginalLink}" target="_blank" class="link-btn btn-map">🔗 連結</a>` : '';
-
-                            card.innerHTML = `
-                                <img class="spot-img" src="${imgUrl}" alt="${item.Name}" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500'">
-                                <div class="spot-info">
-                                    <div class="spot-title" title="${item.Name}">${item.Name || '未知名稱'}</div>
-                                    <div class="spot-detail">
-                                        <span class="label">⏰ 營業：</span>
-                                        <span class="value" title="${item.OpeningHours}">${item.OpeningHours || '店家未提供'}</span>
-                                    </div>
-                                    <div class="spot-detail">
-                                        <span class="label">📍 地址：</span>
-                                        <span class="value" title="${item.Address}">${item.Address || '未提供詳細地址'}</span>
-                                    </div>
-                                    <div class="card-footer-btns">
-                                        ${mapBtn}
-                                        ${igBtn}
-                                    </div>
-                                </div>
-                            `;
-                            grid.appendChild(card);
-                        });
-                        
-                        groupSection.appendChild(grid);
-                        container.appendChild(groupSection);
-                    });
+                    if (!renderedAny) {
+                        container.innerHTML = '<div class="empty-message">目前沒有符合分區的景點。</div>';
+                    }
 
                 } else {
                     container.innerHTML = '<div class="empty-message">目前許願池空空如也，快去 Tab 1 許願吧！</div>';
@@ -586,6 +560,53 @@
             .finally(() => {
                 loader.style.display = 'none';
             });
+        }
+
+        function renderRegionSection(container, regionName, items) {
+            const groupSection = document.createElement('div');
+            groupSection.className = 'region-group';
+            
+            const header = document.createElement('div');
+            header.className = 'region-header';
+            header.innerText = `📍 ${regionName} (${items.length})`;
+            groupSection.appendChild(header);
+            
+            const grid = document.createElement('div');
+            grid.className = 'pool-grid';
+            
+            const displayItems = [...items].reverse();
+            
+            displayItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'spot-card';
+                
+                const imgUrl = item.ImageUrl || item.imageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500';
+                const igBtn = (item.InstagramLink || item.instagramLink) ? `<a href="${item.InstagramLink || item.instagramLink}" target="_blank" class="link-btn btn-ig">📸 IG</a>` : '';
+                const mapBtn = (item.OriginalLink || item.originalLink) ? `<a href="${item.OriginalLink || item.originalLink}" target="_blank" class="link-btn btn-map">🔗 連結</a>` : '';
+
+                card.innerHTML = `
+                    <img class="spot-img" src="${imgUrl}" alt="${item.Name || item.name}" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500'">
+                    <div class="spot-info">
+                        <div class="spot-title" title="${item.Name || item.name}">${item.Name || item.name || '未知名稱'}</div>
+                        <div class="spot-detail">
+                            <span class="label">⏰ 營業：</span>
+                            <span class="value" title="${item.OpeningHours || item.openingHours}">${item.OpeningHours || item.openingHours || '店家未提供'}</span>
+                        </div>
+                        <div class="spot-detail">
+                            <span class="label">📍 地址：</span>
+                            <span class="value" title="${item.Address || item.address}">${item.Address || item.address || '未提供詳細地址'}</span>
+                        </div>
+                        <div class="card-footer-btns">
+                            ${mapBtn}
+                            ${igBtn}
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            
+            groupSection.appendChild(grid);
+            container.appendChild(groupSection);
         }
     </script>
 </body>
