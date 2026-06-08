@@ -13,7 +13,6 @@
             --text-color: #2f3e46;
             --text-light: #6c757d;
             --border-color: #e0e0e0;
-            --group-bg: #eef5f1;
         }
 
         * {
@@ -79,7 +78,7 @@
         }
 
         .content-container {
-            max-width: 1600px; /* 加寬貨架，容納更多直式卡片 */
+            max-width: 1600px;
             margin: 20px auto;
             padding: 0 16px;
         }
@@ -184,23 +183,18 @@
             box-shadow: 0 2px 6px rgba(74, 124, 89, 0.2);
         }
 
-        /* 網格佈局：核心修改（一排 5 ~ 6 張直式卡片） */
+        /* 網格佈局：一排 5 ~ 6 張直式卡片 */
         .pool-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); /* 自動塞滿，極限每張最窄230px */
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
             gap: 20px;
         }
 
-        /* 在超大螢幕 (如電腦) 鎖定為一排最少 5 張，最多 6 張 */
         @media (min-width: 1400px) {
-            .pool-grid {
-                grid-template-columns: repeat(6, 1fr); 
-            }
+            .pool-grid { grid-template-columns: repeat(6, 1fr); }
         }
         @media (min-width: 1200px) and (max-width: 1399px) {
-            .pool-grid {
-                grid-template-columns: repeat(5, 1fr); 
-            }
+            .pool-grid { grid-template-columns: repeat(5, 1fr); }
         }
 
         /* 直式卡片設計 */
@@ -211,7 +205,7 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.04);
             border: 1px solid #f0e9df;
             display: flex;
-            flex-direction: column; /* 讓內容垂直往下長 */
+            flex-direction: column;
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
@@ -220,7 +214,6 @@
             box-shadow: 0 6px 16px rgba(0,0,0,0.08);
         }
 
-        /* 直式卡片專屬：固定高度、1:1 或接近黃金比例的圖片 */
         .spot-img {
             width: 100%;
             height: 180px; 
@@ -232,7 +225,7 @@
             padding: 14px;
             display: flex;
             flex-direction: column;
-            flex: 1; /* 撐開高度，使按鈕對齊底部 */
+            flex: 1;
         }
 
         .spot-title {
@@ -240,12 +233,11 @@
             font-weight: bold;
             margin-bottom: 10px;
             color: var(--text-color);
-            /* 超過兩行自動省略號 */
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            height: 44px; /* 固定高度防止卡片高低不一 */
+            height: 44px;
         }
 
         .spot-detail {
@@ -266,11 +258,11 @@
             flex: 1;
             white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis; /* 精簡直式欄位，超出範圍就省略 */
+            text-overflow: ellipsis;
         }
 
         .card-footer-btns {
-            margin-top: auto; /* 將按鈕推至最底部 */
+            margin-top: auto;
             padding-top: 10px;
             display: flex;
             gap: 8px;
@@ -286,15 +278,8 @@
             text-align: center;
         }
 
-        .btn-ig {
-            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-            color: white;
-        }
-
-        .btn-map {
-            background-color: #4285F4;
-            color: white;
-        }
+        .btn-ig { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; }
+        .btn-map { background-color: #4285F4; color: white; }
 
         .loading-spinner {
             display: none;
@@ -324,12 +309,12 @@
 
     <header>
         <h1>✨ 景點許願池 ✨</h1>
-        <p>貼上連結、自由微調，自動按地區為你分類好所有想去的地方</p>
+        <p>自訂分區群組，一目瞭然打造專屬的旅遊路書卡片牆</p>
     </header>
 
     <div class="tabs-container">
         <button class="tab-btn active" onclick="switchTab('tab1')">我要許願</button>
-        <button class="tab-btn" onclick="switchTab('tab2')">許願池清單</button>
+        <button class="tab-btn" onclick="window.location.reload(); switchTab('tab2')">許願池清單</button>
     </div>
 
     <div class="content-container">
@@ -345,17 +330,23 @@
 
                 <div class="manual-edit-section" id="manualSection">
                     <h3>💡 第二步：確認或修正景點資料</h3>
+                    
+                    <div class="input-group">
+                        <label style="color: #b87d4b;">📍 設定分區（群組名稱）：</label>
+                        <input type="text" id="editRegion" placeholder="例如：涯月、西歸浦、細花、台北市..." required>
+                    </div>
+
                     <div class="input-group">
                         <label>景點名稱：</label>
                         <input type="text" id="editName" placeholder="例如：海之日咖啡廳 Haejigae">
                     </div>
                     <div class="input-group">
                         <label>營業時間：</label>
-                        <input type="text" id="editHours" placeholder="例如：09:00 - 21:00 / 全年無休">
+                        <input type="text" id="editHours" placeholder="例如：09:00 - 21:00">
                     </div>
                     <div class="input-group">
-                        <label>景點地址（請務必包含縣市/地區名，以便自動分類）：</label>
-                        <input type="text" id="editAddress" placeholder="例如：濟州市涯月邑... 或 台北市信義區...">
+                        <label>景點地址：</label>
+                        <input type="text" id="editAddress" placeholder="例如：濟州市涯月邑...">
                     </div>
                     <div class="input-group">
                         <label>精選圖片網址（可留空）：</label>
@@ -372,8 +363,7 @@
 
         <div id="tab2" class="tab-content">
             <div class="loading-spinner" id="listLoading" style="display: block;"></div>
-            <div id="poolContainer">
-                </div>
+            <div id="poolContainer"></div>
         </div>
 
     </div>
@@ -424,6 +414,7 @@
                     document.getElementById('editAddress').value = data.Address === '未知地址' ? '' : data.Address;
                     document.getElementById('editImageUrl').value = data.ImageUrl.includes('unsplash') ? '' : data.ImageUrl;
                     document.getElementById('editIgLink').value = data.InstagramLink || (url.includes('instagram.com') ? url : '');
+                    document.getElementById('editRegion').value = ''; // 讓使用者填寫
                     manualSection.style.display = 'block';
                     manualSection.scrollIntoView({ behavior: 'smooth' });
                 } else {
@@ -442,6 +433,7 @@
             document.getElementById('editHours').value = '';
             document.getElementById('editAddress').value = '';
             document.getElementById('editImageUrl').value = '';
+            document.getElementById('editRegion').value = '';
             document.getElementById('editIgLink').value = url.includes('instagram.com') ? url : '';
             document.getElementById('manualSection').style.display = 'block';
         }
@@ -449,6 +441,7 @@
         function submitFinalWish() {
             const submitBtn = document.getElementById('submitBtn');
             const url = document.getElementById('spotUrl').value.trim();
+            const regionVal = document.getElementById('editRegion').value.trim() || '其他地區';
             
             const finalData = {
                 isManualSubmit: true,
@@ -457,7 +450,8 @@
                 openingHours: document.getElementById('editHours').value.trim() || '店家未提供',
                 address: document.getElementById('editAddress').value.trim() || '未提供詳細地址',
                 imageUrl: document.getElementById('editImageUrl').value.trim() || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500',
-                instagramLink: document.getElementById('editIgLink').value.trim()
+                instagramLink: document.getElementById('editIgLink').value.trim(),
+                region: regionVal // 🚀 送往後端寫入 G 欄
             };
 
             submitBtn.disabled = true;
@@ -482,7 +476,7 @@
             });
         }
 
-        // 核心邏輯：讀取清單、按地區歸類並以直式網格呈現
+        // 🚀 核心優化：直接讀取試算表中的 Region（G 欄）進行分類群組
         function fetchWishlist() {
             const container = document.getElementById('poolContainer');
             const loader = document.getElementById('listLoading');
@@ -494,27 +488,12 @@
             .then(res => {
                 if (res.status === 'success' && res.data.length > 0) {
                     
-                    // 1. 自動從地址中抽取出地區（如：台北市、新北市、濟州市、京都府）
-                    // 排序與分組邏輯
                     const groups = {};
                     
                     res.data.forEach(item => {
-                        let region = '其他地區';
-                        const addr = item.Address || '';
-                        
-                        if (addr && addr !== '未知地址' && addr !== '請點連結查看地圖' && addr !== '未提供詳細地址') {
-                            // 去除前後空格並擷取開頭的前 3~4 個字（通常包含縣市名或韓國的島市邑名）
-                            const cleanAddr = addr.trim();
-                            // 簡單比對台灣縣市或外國常用字
-                            if (cleanAddr.length >= 3) {
-                                region = cleanAddr.substring(0, 3); // 擷取前三個字（如："제주제" -> 濟州、"台北市"）
-                                
-                                // 特殊修正：如果是韓國地址（如 제주제주시...），精簡為「濟州 (제주)」
-                                if (region.includes('제주')) region = '濟州島 (제주)';
-                                else if (region.includes('首爾') || region.includes('서울')) region = '首爾 (서울)';
-                                else if (region.includes('京都')) region = '京都';
-                            }
-                        }
+                        // 🚀 讀取試算表中對應的 Region 欄位資料（若留空則歸類到其他地區）
+                        let region = item.Region ? item.Region.trim() : '其他地區';
+                        if (!region) region = '其他地區';
                         
                         if (!groups[region]) {
                             groups[region] = [];
@@ -522,23 +501,19 @@
                         groups[region].push(item);
                     });
 
-                    // 2. 依序把每個地區的組別渲染出來
+                    // 渲染群組
                     Object.keys(groups).sort().forEach(regionName => {
-                        // 建立組別區塊
                         const groupSection = document.createElement('div');
                         groupSection.className = 'region-group';
                         
-                        // 建立地區標題
                         const header = document.createElement('div');
                         header.className = 'region-header';
                         header.innerText = `📍 ${regionName} (${groups[regionName].length})`;
                         groupSection.appendChild(header);
                         
-                        // 建立該地區的 5~6 欄直式卡片網格 (Grid)
                         const grid = document.createElement('div');
                         grid.className = 'pool-grid';
                         
-                        // 塞入卡片（該地區最新加入的排在前面）
                         groups[regionName].reverse().forEach(item => {
                             const card = document.createElement('div');
                             card.className = 'spot-card';
