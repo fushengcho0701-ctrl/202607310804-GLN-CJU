@@ -91,7 +91,6 @@
             display: block;
         }
 
-        /* 表單樣式 */
         .wish-form-card {
             max-width: 700px;
             margin: 0 auto;
@@ -167,7 +166,6 @@
             text-align: center;
         }
 
-        /* 地區分組標題樣式 */
         .region-group {
             margin-bottom: 40px;
         }
@@ -184,21 +182,16 @@
             box-shadow: 0 2px 6px rgba(74, 124, 89, 0.2);
         }
 
-        /* 網格佈局 */
         .pool-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             gap: 20px;
         }
 
-        @media (min-width: 1400px) {
-            .pool-grid { grid-template-columns: repeat(6, 1fr); }
-        }
-        @media (min-width: 1200px) and (max-width: 1399px) {
-            .pool-grid { grid-template-columns: repeat(5, 1fr); }
-        }
+        @media (min-width: 1400px) { .pool-grid { grid-template-columns: repeat(6, 1fr); } }
+        @media (min-width: 1200px) and (max-width: 1399px) { .pool-grid { grid-template-columns: repeat(5, 1fr); } }
 
-        /* 直式卡片設計 */
+        /* 直式卡片高度加高以容納投票區 */
         .spot-card {
             background: var(--card-bg);
             border-radius: 12px;
@@ -208,6 +201,7 @@
             display: flex;
             flex-direction: column;
             transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
         }
 
         .spot-card:hover {
@@ -215,43 +209,58 @@
             box-shadow: 0 6px 16px rgba(0,0,0,0.08);
         }
 
+        /* 右上角積分勳章徽章 */
+        .score-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(230, 92, 0, 0.9);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            z-index: 2;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
         .spot-img {
             width: 100%;
-            height: 180px; 
+            height: 160px; 
             object-fit: cover;
             background-color: #eaeaea;
         }
 
         .spot-info {
-            padding: 14px;
+            padding: 12px;
             display: flex;
             flex-direction: column;
             flex: 1;
         }
 
         .spot-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: var(--text-color);
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            height: 44px;
+            height: 42px;
         }
 
         .spot-detail {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-light);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             display: flex;
             align-items: flex-start;
         }
 
         .spot-detail span.label {
             font-weight: bold;
-            min-width: 65px;
+            min-width: 55px;
             color: var(--primary-color);
         }
 
@@ -263,24 +272,62 @@
         }
 
         .card-footer-btns {
-            margin-top: auto;
-            padding-top: 10px;
+            margin-top: 10px;
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
 
         .link-btn {
             flex: 1;
-            padding: 8px 4px;
+            padding: 6px 2px;
             text-decoration: none;
-            border-radius: 6px;
-            font-size: 12px;
+            border-radius: 4px;
+            font-size: 11px;
             font-weight: bold;
             text-align: center;
         }
 
         .btn-ig { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; }
         .btn-map { background-color: #4285F4; color: white; }
+
+        /* 🚀 核心修改：三人群組投票打勾區 */
+        .vote-section {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px dashed #e0e0e0;
+            background-color: #fcfbfa;
+            border-radius: 6px;
+            padding: 8px;
+        }
+
+        .vote-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: #b87d4b;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .vote-options {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            gap: 4px;
+        }
+
+        .vote-item {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .vote-item input {
+            cursor: pointer;
+            width: 14px;
+            height: 14px;
+        }
 
         .loading-spinner {
             display: none;
@@ -293,24 +340,15 @@
             animation: spin 1s linear infinite;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .empty-message {
-            text-align: center;
-            color: var(--text-light);
-            padding: 40px 20px;
-            font-style: italic;
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .empty-message { text-align: center; color: var(--text-light); padding: 40px 20px; font-style: italic; }
     </style>
 </head>
 <body>
 
     <header>
         <h1>✨ 景點許願池 ✨</h1>
-        <p>自訂分區群組，一目瞭然打造專屬的旅遊路書卡片牆</p>
+        <p>Yoyo ✕ Catherine ✕ Lisa 專屬三人揪團島嶼投票路書</p>
     </header>
 
     <div class="tabs-container">
@@ -331,7 +369,6 @@
 
                 <div class="manual-edit-section" id="manualSection">
                     <h3>💡 第二步：確認或修正景點資料</h3>
-                    
                     <div class="input-group">
                         <label style="color: #b87d4b;">📍 設定分區（群組名稱）：</label>
                         <select id="editRegion" required>
@@ -343,7 +380,6 @@
                             <option value="濟州離島牛島">濟州離島牛島</option>
                         </select>
                     </div>
-
                     <div class="input-group">
                         <label>景點名稱：</label>
                         <input type="text" id="editName" placeholder="例如：海之日咖啡廳 Haejigae">
@@ -377,7 +413,7 @@
     </div>
 
     <script>
-        // 🔗 換上你的 Google Apps Script 網頁應用程式網址
+        // 🔗 請換上你的 Google Apps Script 網頁應用程式網址
         const GAS_URL = "https://script.google.com/macros/s/AKfycbywOj8P2MeYQtBN5HLzE00eTUSFmpCRBWWNQkxvX6i590Vhp-nub_ll2knhQchzG6iZ/exec";
 
         const REGION_ORDER = [
@@ -391,7 +427,6 @@
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            
             document.getElementById(tabId).classList.add('active');
             
             if(event && event.currentTarget) {
@@ -414,10 +449,7 @@
             const loader = document.getElementById('formLoading');
             const manualSection = document.getElementById('manualSection');
 
-            if (!url) {
-                alert('請先貼上網址！');
-                return;
-            }
+            if (!url) { alert('請先貼上網址！'); return; }
 
             checkBtn.disabled = true;
             loader.style.display = 'block';
@@ -432,23 +464,18 @@
             .then(res => {
                 if (res.status === 'success') {
                     const data = res.data;
-                    document.getElementById('editName').value = data.Name === '未知名稱' ? '' : data.Name;
-                    document.getElementById('editHours').value = data.OpeningHours === '尚未提供' ? '' : data.OpeningHours;
-                    document.getElementById('editAddress').value = data.Address === '未知地址' ? '' : data.Address;
+                    document.getElementById('editName').value = data.Name || '';
+                    document.getElementById('editHours').value = data.OpeningHours || '';
+                    document.getElementById('editAddress').value = data.Address || '';
                     document.getElementById('editImageUrl').value = data.ImageUrl.includes('unsplash') ? '' : data.ImageUrl;
                     document.getElementById('editIgLink').value = data.InstagramLink || (url.includes('instagram.com') ? url : '');
                     document.getElementById('editRegion').value = '';
                     manualSection.style.display = 'block';
                     manualSection.scrollIntoView({ behavior: 'smooth' });
-                } else {
-                    openEmptyManualSection(url);
-                }
+                } else { openEmptyManualSection(url); }
             })
             .catch(() => openEmptyManualSection(url))
-            .finally(() => {
-                checkBtn.disabled = false;
-                loader.style.display = 'none';
-            });
+            .finally(() => { checkBtn.disabled = false; loader.style.display = 'none'; });
         }
 
         function openEmptyManualSection(url) {
@@ -490,13 +517,34 @@
                 document.getElementById('manualSection').style.display = 'none';
                 switchTab('tab2');
             })
-            .catch(err => {
-                console.error(err);
-                alert('寫入失敗，請稍後再試。');
+            .catch(err => { console.error(err); alert('寫入失敗，請稍後再試。'); })
+            .finally(() => { submitBtn.disabled = false; });
+        }
+
+        // 🚀 執行即時更新投票狀態至後端
+        function updateVote(rowId, name) {
+            const cbYoyo = document.getElementById(`cb-yoyo-${rowId}`).checked;
+            const cbCatherine = document.getElementById(`cb-cath-${rowId}`).checked;
+            const cbLisa = document.getElementById(`cb-lisa-${rowId}`).checked;
+            
+            // 計算即時總分並更新網頁徽章
+            let score = (cbYoyo?1:0) + (cbCatherine?1:0) + (cbLisa?1:0);
+            document.getElementById(`badge-${rowId}`).innerText = `🔥 得分: ${score}分`;
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify({
+                    action: 'vote',
+                    rowId: rowId,
+                    v_yoyo: cbYoyo,
+                    v_catherine: cbCatherine,
+                    v_lisa: cbLisa
+                })
             })
-            .finally(() => {
-                submitBtn.disabled = false;
-            });
+            .then(res => res.json())
+            .then(res => { if(res.status !== 'success') console.error('投票同步失敗'); })
+            .catch(err => console.error('網路連線失敗', err));
         }
 
         function fetchWishlist() {
@@ -513,100 +561,90 @@
                     const groups = {};
                     
                     res.data.forEach(item => {
-                        // 🚀 核心優化：同時相容 GAS 傳過來的 大寫 Region、小寫 region 或 中文「分區」名稱！
                         let rawRegion = item.Region || item.region || item.分區 || ''; 
                         let region = rawRegion.toString().trim();
+                        if (!region) region = '其他地區';
                         
-                        if (!region) {
-                            region = '其他地區';
-                        }
+                        if (!groups[region]) groups[region] = [];
                         
-                        if (!groups[region]) {
-                            groups[region] = [];
-                        }
+                        // 🚀 計算每張卡片的總積分（打勾一個得1分，最高3分）
+                        item.totalScore = (item.v_yoyo?1:0) + (item.v_catherine?1:0) + (item.v_lisa?1:0);
+                        
                         groups[region].push(item);
                     });
 
-                    let renderedAny = false;
-
-                    // 依序渲染 5 大分區
-                    REGION_ORDER.forEach(regionName => {
-                        if (groups[regionName] && groups[regionName].length > 0) {
-                            renderedAny = true;
-                            renderRegionSection(container, regionName, groups[regionName]);
-                        }
-                    });
-
-                    // 渲染其他可能因為大小寫或空格沒比對上的分區
+                    // 依序排列渲染
+                    let orderedRegions = REGION_ORDER.filter(r => groups[r]);
                     Object.keys(groups).forEach(r => {
-                        if (!REGION_ORDER.includes(r)) {
-                            renderedAny = true;
-                            renderRegionSection(container, r, groups[r]);
-                        }
+                        if (!orderedRegions.includes(r)) orderedRegions.push(r);
                     });
 
-                    if (!renderedAny) {
-                        container.innerHTML = '<div class="empty-message">目前沒有符合分區的景點。</div>';
-                    }
+                    orderedRegions.forEach(regionName => {
+                        const groupSection = document.createElement('div');
+                        groupSection.className = 'region-group';
+                        
+                        const header = document.createElement('div');
+                        header.className = 'region-header';
+                        header.innerText = `📍 ${regionName} (${groups[regionName].length})`;
+                        groupSection.appendChild(header);
+                        
+                        const grid = document.createElement('div');
+                        grid.className = 'pool-grid';
+                        
+                        // 🚀 核心巨變：按照積分從高到低（3分 ➔ 2分 ➔ 1分 ➔ 0分）進行排序！
+                        // 如果分數一樣，則保持原本的新舊順序
+                        const sortedItems = [...groups[regionName]].sort((a, b) => b.totalScore - a.totalScore);
+                        
+                        sortedItems.forEach(item => {
+                            const card = document.createElement('div');
+                            card.className = 'spot-card';
+                            
+                            const imgUrl = item.ImageUrl || item.imageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500';
+                            const igBtn = (item.InstagramLink || item.instagramLink) ? `<a href="${item.InstagramLink || item.instagramLink}" target="_blank" class="link-btn btn-ig">📸 IG</a>` : '';
+                            const mapBtn = (item.OriginalLink || item.originalLink) ? `<a href="${item.OriginalLink || item.originalLink}" target="_blank" class="link-btn btn-map">🔗 連結</a>` : '';
 
+                            card.innerHTML = `
+                                <div class="score-badge" id="badge-${item.rowId}">🔥 得分: ${item.totalScore}分</div>
+                                
+                                <img class="spot-img" src="${imgUrl}" alt="${item.Name || item.name}" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500'">
+                                <div class="spot-info">
+                                    <div class="spot-title" title="${item.Name || item.name}">${item.Name || item.name || '未知名稱'}</div>
+                                    <div class="spot-detail"><span class="label">⏰ 營業：</span><span class="value" title="${item.OpeningHours || item.openingHours}">${item.OpeningHours || item.openingHours || '店家未提供'}</span></div>
+                                    <div class="spot-detail"><span class="label">📍 地址：</span><span class="value" title="${item.Address || item.address}">${item.Address || item.address || '未提供詳細地址'}</span></div>
+                                    
+                                    <div class="card-footer-btns">
+                                        ${mapBtn}
+                                        ${igBtn}
+                                    </div>
+                                    
+                                    <div class="vote-section">
+                                        <div class="vote-title">誰想去這？</div>
+                                        <div class="vote-options">
+                                            <label class="vote-item">
+                                                <input type="checkbox" id="cb-yoyo-${item.rowId}" ${item.v_yoyo ? 'checked' : ''} onchange="updateVote(${item.rowId}, 'yoyo')"> Yoyo
+                                            </label>
+                                            <label class="vote-item">
+                                                <input type="checkbox" id="cb-cath-${item.rowId}" ${item.v_v_catherine || item.v_catherine ? 'checked' : ''} onchange="updateVote(${item.rowId}, 'catherine')"> Cath
+                                            </label>
+                                            <label class="vote-item">
+                                                <input type="checkbox" id="cb-lisa-${item.rowId}" ${item.v_lisa ? 'checked' : ''} onchange="updateVote(${item.rowId}, 'lisa')"> Lisa
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            grid.appendChild(card);
+                        });
+                        
+                        groupSection.appendChild(grid);
+                        container.appendChild(groupSection);
+                    });
                 } else {
                     container.innerHTML = '<div class="empty-message">目前許願池空空如也，快去 Tab 1 許願吧！</div>';
                 }
             })
-            .catch(err => {
-                console.error(err);
-                container.innerHTML = '<div class="empty-message">系統忙碌中，請重新整理網頁再試。</div>';
-            })
-            .finally(() => {
-                loader.style.display = 'none';
-            });
-        }
-
-        function renderRegionSection(container, regionName, items) {
-            const groupSection = document.createElement('div');
-            groupSection.className = 'region-group';
-            
-            const header = document.createElement('div');
-            header.className = 'region-header';
-            header.innerText = `📍 ${regionName} (${items.length})`;
-            groupSection.appendChild(header);
-            
-            const grid = document.createElement('div');
-            grid.className = 'pool-grid';
-            
-            const displayItems = [...items].reverse();
-            
-            displayItems.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'spot-card';
-                
-                const imgUrl = item.ImageUrl || item.imageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500';
-                const igBtn = (item.InstagramLink || item.instagramLink) ? `<a href="${item.InstagramLink || item.instagramLink}" target="_blank" class="link-btn btn-ig">📸 IG</a>` : '';
-                const mapBtn = (item.OriginalLink || item.originalLink) ? `<a href="${item.OriginalLink || item.originalLink}" target="_blank" class="link-btn btn-map">🔗 連結</a>` : '';
-
-                card.innerHTML = `
-                    <img class="spot-img" src="${imgUrl}" alt="${item.Name || item.name}" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500'">
-                    <div class="spot-info">
-                        <div class="spot-title" title="${item.Name || item.name}">${item.Name || item.name || '未知名稱'}</div>
-                        <div class="spot-detail">
-                            <span class="label">⏰ 營業：</span>
-                            <span class="value" title="${item.OpeningHours || item.openingHours}">${item.OpeningHours || item.openingHours || '店家未提供'}</span>
-                        </div>
-                        <div class="spot-detail">
-                            <span class="label">📍 地址：</span>
-                            <span class="value" title="${item.Address || item.address}">${item.Address || item.address || '未提供詳細地址'}</span>
-                        </div>
-                        <div class="card-footer-btns">
-                            ${mapBtn}
-                            ${igBtn}
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-            
-            groupSection.appendChild(grid);
-            container.appendChild(groupSection);
+            .catch(err => { console.error(err); container.innerHTML = '<div class="empty-message">系統忙碌中，請重新整理網頁再試。</div>'; })
+            .finally(() => { loader.style.display = 'none'; });
         }
     </script>
 </body>
