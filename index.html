@@ -120,17 +120,18 @@
             color: var(--text-color);
         }
 
-        .input-group input {
+        .input-group input, .input-group select {
             width: 100%;
             padding: 12px;
             border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 15px;
             outline: none;
+            background-color: #fff;
             transition: border-color 0.3s;
         }
 
-        .input-group input:focus {
+        .input-group input:focus, .input-group select:focus {
             border-color: var(--secondary-color);
         }
 
@@ -333,7 +334,14 @@
                     
                     <div class="input-group">
                         <label style="color: #b87d4b;">📍 設定分區（群組名稱）：</label>
-                        <input type="text" id="editRegion" placeholder="例如：涯月、西歸浦、細花、台北市..." required>
+                        <select id="editRegion" required>
+                            <option value="" disabled selected>-- 請選擇濟州分區 --</option>
+                            <option value="濟州市區（北部）">濟州市區（北部）</option>
+                            <option value="濟州西部">濟州西部</option>
+                            <option value="濟州東部">濟州東部</option>
+                            <option value="濟州南部">濟州南部</option>
+                            <option value="濟州離島（牛島）">濟州離島（牛島）</option>
+                        </select>
                     </div>
 
                     <div class="input-group">
@@ -369,8 +377,17 @@
     </div>
 
     <script>
-        // 🔗 請換上你的 Google Apps Script 網頁應用程式網址
+        // 🔗 換上你的 Google Apps Script 網頁應用程式網址
         const GAS_URL = "https://script.google.com/macros/s/AKfycbywOj8P2MeYQtBN5HLzE00eTUSFmpCRBWWNQkxvX6i590Vhp-nub_ll2knhQchzG6iZ/exec";
+
+        // 🚀 定義固定的分區渲染順序
+        const REGION_ORDER = [
+            "濟州市區（北部）",
+            "濟州西部",
+            "濟州東部",
+            "濟州南部",
+            "濟州離島（牛島）"
+        ];
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -378,11 +395,9 @@
             
             document.getElementById(tabId).classList.add('active');
             
-            // 修正：更安全的 class 切換方式
             if(event && event.currentTarget) {
                 event.currentTarget.classList.add('active');
             } else {
-                // 如果是手動觸發跳轉，找出對應的按鈕加上 active
                 const btns = document.querySelectorAll('.tab-btn');
                 if(tabId === 'tab1') btns[0].classList.add('active');
                 if(tabId === 'tab2') btns[1].classList.add('active');
@@ -450,7 +465,7 @@
         function submitFinalWish() {
             const submitBtn = document.getElementById('submitBtn');
             const url = document.getElementById('spotUrl').value.trim();
-            const regionVal = document.getElementById('editRegion').value.trim() || '其他地區';
+            const regionVal = document.getElementById('editRegion').value || '其他地區';
             
             const finalData = {
                 isManualSubmit: true,
@@ -474,7 +489,6 @@
                 alert('🎉 成功加入許願池清單！');
                 document.getElementById('spotUrl').value = '';
                 document.getElementById('manualSection').style.display = 'none';
-                // 提交成功後，自動導向 Tab 2
                 switchTab('tab2');
             })
             .catch(err => {
@@ -499,6 +513,7 @@
                     
                     const groups = {};
                     
+                    // 將資料分組
                     res.data.forEach(item => {
                         let region = item.Region ? item.Region.trim() : '其他地區';
                         if (!region) region = '其他地區';
@@ -509,8 +524,16 @@
                         groups[region].push(item);
                     });
 
-                    // 依據 G 欄填寫的名稱排序渲染各區
-                    Object.keys(groups).sort().forEach(regionName => {
+                    // 🚀 關鍵優化：按照指定的 REGION_ORDER 順序依次渲染
+                    // 先把既有的分類按順序抓出來
+                    let orderedRegions = REGION_ORDER.filter(r => groups[r]);
+                    
+                    // 萬一試算表裡有其他漏掉沒定義的分類，補在最後面
+                    Object.keys(groups).forEach(r => {
+                        if (!orderedRegions.includes(r)) orderedRegions.push(r);
+                    });
+
+                    orderedRegions.forEach(regionName => {
                         const groupSection = document.createElement('div');
                         groupSection.className = 'region-group';
                         
@@ -522,7 +545,6 @@
                         const grid = document.createElement('div');
                         grid.className = 'pool-grid';
                         
-                        // 讓同分區內最新加入的景點排在最前面
                         groups[regionName].reverse().forEach(item => {
                             const card = document.createElement('div');
                             card.className = 'spot-card';
