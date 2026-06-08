@@ -12,6 +12,7 @@
             --card-bg: #ffffff;
             --text-color: #2f3e46;
             --text-light: #6c757d;
+            --border-color: #e0e0e0;
         }
 
         * {
@@ -47,7 +48,6 @@
             opacity: 0.9;
         }
 
-        /* Tabs 導覽列 */
         .tabs-container {
             max-width: 800px;
             margin: 20px auto 0 auto;
@@ -77,7 +77,6 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        /* 內容區域 */
         .content-container {
             max-width: 800px;
             margin: 20px auto;
@@ -92,29 +91,37 @@
             display: block;
         }
 
-        /* Tab 1: 表單樣式 */
+        /* 表單與修正區域 */
         .wish-form-card {
             background: var(--card-bg);
             padding: 30px 20px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            text-align: center;
         }
 
         .wish-form-card h2 {
             margin-bottom: 15px;
             font-size: 18px;
             color: var(--primary-color);
+            text-align: center;
         }
 
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: var(--text-color);
         }
 
         .input-group input {
             width: 100%;
-            padding: 14px;
-            border: 2px solid #e0e0e0;
+            padding: 12px;
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             font-size: 15px;
             outline: none;
@@ -125,7 +132,7 @@
             border-color: var(--secondary-color);
         }
 
-        .submit-btn {
+        .action-btn {
             background: var(--primary-color);
             color: white;
             border: none;
@@ -136,22 +143,34 @@
             cursor: pointer;
             width: 100%;
             transition: background 0.3s;
+            margin-top: 10px;
         }
 
-        .submit-btn:hover {
+        .action-btn:hover {
             background: #3b6347;
         }
 
-        .submit-btn:disabled {
+        .action-btn:disabled {
             background: #a5c4ae;
             cursor: not-allowed;
         }
 
-        /* Tab 2: 許願池清單卡片樣式 */
-        .pool-grid {
-            display: block;
+        /* 手動修正表單區（預設隱藏） */
+        .manual-edit-section {
+            display: none;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px dashed #f0e9df;
         }
 
+        .manual-edit-section h3 {
+            font-size: 16px;
+            color: #b87d4b;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* 列表卡片樣式 */
         .spot-card {
             background: var(--card-bg);
             border-radius: 12px;
@@ -163,7 +182,7 @@
 
         .spot-img {
             width: 100%;
-            height: 220px;
+            height: 240px;
             object-fit: cover;
             background-color: #eaeaea;
         }
@@ -175,7 +194,7 @@
         .spot-title {
             font-size: 18px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             color: var(--text-color);
         }
 
@@ -189,7 +208,7 @@
 
         .spot-detail span.label {
             font-weight: bold;
-            min-width: 75px;
+            min-width: 80px;
             color: var(--primary-color);
         }
 
@@ -197,25 +216,42 @@
             flex: 1;
         }
 
-        .ig-link-btn {
-            display: inline-block;
-            margin-top: 12px;
-            padding: 8px 16px;
-            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-            color: white;
+        .card-footer-btns {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .link-btn {
+            flex: 1;
+            padding: 10px;
             text-decoration: none;
             border-radius: 6px;
             font-size: 13px;
             font-weight: bold;
             text-align: center;
+            transition: opacity 0.2s;
         }
 
-        /* 系統提示 & Loading */
+        .link-btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-ig {
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            color: white;
+        }
+
+        .btn-map {
+            background-color: #4285F4;
+            color: white;
+        }
+
         .loading-spinner {
             display: none;
             margin: 20px auto;
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border: 4px solid rgba(0,0,0,0.1);
             border-left-color: var(--primary-color);
             border-radius: 50%;
@@ -239,7 +275,7 @@
 
     <header>
         <h1>✨ 景點許願池 ✨</h1>
-        <p>丟入 Google Maps / Naver / IG 連結，自動為你收納美好去處</p>
+        <p>丟入 Google Maps / Naver / IG 連結，自由編輯與收藏想去的好地方</p>
     </header>
 
     <div class="tabs-container">
@@ -251,28 +287,57 @@
         
         <div id="tab1" class="tab-content active">
             <div class="wish-form-card">
-                <h2>貼上你想去的景點網址</h2>
+                <h2>第一步：貼上景點網址</h2>
                 <div class="input-group">
                     <input type="url" id="spotUrl" placeholder="請在此處貼上 Google 地圖、Naver 或 IG 連結..." required>
                 </div>
-                <button class="submit-btn" id="submitBtn" onclick="submitWish()">投進許願池</button>
+                <button class="action-btn" id="checkBtn" onclick="checkUrl()">🔍 檢查並讀取網址</button>
                 <div class="loading-spinner" id="formLoading"></div>
+
+                <div class="manual-edit-section" id="manualSection">
+                    <h3>💡 第二步：確認或修正景點資料</h3>
+                    
+                    <div class="input-group">
+                        <label>景點名稱：</label>
+                        <input type="text" id="editName" placeholder="例如：海之日咖啡廳 Haejigae">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>營業時間：</label>
+                        <input type="text" id="editHours" placeholder="例如：09:00 - 21:00 / 全年無休">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>景點地址：</label>
+                        <input type="text" id="editAddress" placeholder="例如：濟州島涯月邑...">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>精選圖片網址（可留空使用預設圖）：</label>
+                        <input type="url" id="editImageUrl" placeholder="請貼上圖片的網址 URL...">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Instagram 連結（選填）：</label>
+                        <input type="url" id="editIgLink" placeholder="如果有 IG 連結請貼在這裡...">
+                    </div>
+
+                    <button class="action-btn" id="submitBtn" onclick="submitFinalWish()" style="background-color: #b87d4b;">🎉 確認投進許願池</button>
+                </div>
             </div>
         </div>
 
         <div id="tab2" class="tab-content">
             <div class="loading-spinner" id="listLoading" style="display: block;"></div>
-            <div class="pool-grid" id="poolGrid">
-                </div>
+            <div class="pool-grid" id="poolGrid"></div>
         </div>
 
     </div>
 
     <script>
-        // 🔗 請換成你部署好的 Google Apps Script 網頁應用程式網址
+        // 🔗 你的 Google Apps Script 網頁應用程式網址
         const GAS_URL = "https://script.google.com/macros/s/AKfycbywOj8P2MeYQtBN5HLzE00eTUSFmpCRBWWNQkxvX6i590Vhp-nub_ll2knhQchzG6iZ/exec";
 
-        // Tab 切換邏輯
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -285,43 +350,109 @@
             }
         }
 
-        // Tab 1: 送出許願資料
-        function submitWish() {
+        // 檢查網址並抓取預覽
+        function checkUrl() {
             const urlInput = document.getElementById('spotUrl');
             const url = urlInput.value.trim();
-            const submitBtn = document.getElementById('submitBtn');
+            const checkBtn = document.getElementById('checkBtn');
             const loader = document.getElementById('formLoading');
+            const manualSection = document.getElementById('manualSection');
 
             if (!url) {
-                alert('請先輸入或貼上網址！');
+                alert('請先貼上網址！');
                 return;
             }
 
-            // 開啟 Loading 狀態
-            submitBtn.disabled = true;
+            checkBtn.disabled = true;
             loader.style.display = 'block';
+            manualSection.style.display = 'none';
 
+            // 發送預覽請求給後端 GAS
             fetch(GAS_URL, {
                 method: 'POST',
-                mode: 'no-cors', // 配合 GAS 跨網域寫入
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ url: url })
+                headers: { 'Content-Type': 'text/plain' }, // 避免 CORS 預檢問題
+                body: JSON.stringify({ action: 'preview', url: url })
             })
-            .then(() => {
-                alert('🎉 許願成功！資料已寫入試算表！\n(因自動解析技術限制，部分細節請至試算表或列表確認)');
-                urlInput.value = ''; // 清空輸入框
+            .then(res => res.json())
+            .then(res => {
+                if (res.status === 'success') {
+                    const data = res.data;
+                    // 將後端抓到的不完美資料塞進輸入框，讓使用者可以直接手動改掉！
+                    document.getElementById('editName').value = data.Name === '未知名稱' ? '' : data.Name;
+                    document.getElementById('editHours').value = data.OpeningHours === '尚未提供' ? '' : data.OpeningHours;
+                    document.getElementById('editAddress').value = data.Address === '未知地址' ? '' : data.Address;
+                    document.getElementById('editImageUrl').value = data.ImageUrl.includes('unsplash') ? '' : data.ImageUrl;
+                    document.getElementById('editIgLink').value = data.InstagramLink || (url.includes('instagram.com') ? url : '');
+                    
+                    // 展開修正區
+                    manualSection.style.display = 'block';
+                    // 滾動到修正區
+                    manualSection.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert('讀取失敗，但沒關係！已為你開啟手動輸入欄位。');
+                    openEmptyManualSection(url);
+                }
             })
             .catch(err => {
                 console.error(err);
-                alert('許願失敗，請稍後再試。');
+                // 網路失敗或跨網域時，依然允許使用者直接手動填寫
+                openEmptyManualSection(url);
             })
             .finally(() => {
-                submitBtn.disabled = false;
+                checkBtn.disabled = false;
                 loader.style.display = 'none';
             });
         }
 
-        // Tab 2: 抓取許願池清單並渲染
+        function openEmptyManualSection(url) {
+            document.getElementById('editName').value = '';
+            document.getElementById('editHours').value = '';
+            document.getElementById('editAddress').value = '';
+            document.getElementById('editImageUrl').value = '';
+            document.getElementById('editIgLink').value = url.includes('instagram.com') ? url : '';
+            document.getElementById('manualSection').style.display = 'block';
+        }
+
+        // 送出最終修正完的資料
+        function submitFinalWish() {
+            const submitBtn = document.getElementById('submitBtn');
+            const url = document.getElementById('spotUrl').value.trim();
+            
+            const finalData = {
+                isManualSubmit: true, // 告訴後端：不要再自己亂爬了，用我傳過去的資料就好
+                url: url,
+                name: document.getElementById('editName').value.trim() || '未命名美景',
+                openingHours: document.getElementById('editHours').value.trim() || '店家未提供',
+                address: document.getElementById('editAddress').value.trim() || '請點連結查看地圖',
+                imageUrl: document.getElementById('editImageUrl').value.trim() || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500',
+                instagramLink: document.getElementById('editIgLink').value.trim()
+            };
+
+            submitBtn.disabled = true;
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: JSON.stringify(finalData)
+            })
+            .then(() => {
+                alert('🎉 成功加入許願池清單！');
+                // 清空表單
+                document.getElementById('spotUrl').value = '';
+                document.getElementById('manualSection').style.display = 'none';
+                // 自動跳轉到 Tab 2 觀看成果
+                switchTab('tab2');
+            })
+            .catch(err => {
+                console.error(err);
+                alert('寫入失敗，請稍後再試。');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+            });
+        }
+
+        // 讀取清單並顯示
         function fetchWishlist() {
             const grid = document.getElementById('poolGrid');
             const loader = document.getElementById('listLoading');
@@ -332,19 +463,20 @@
             .then(res => res.json())
             .then(res => {
                 if (res.status === 'success' && res.data.length > 0) {
-                    // 反轉陣列，讓最新許願的景點排在最上面
                     const reversedData = res.data.reverse();
                     
                     reversedData.forEach(item => {
                         const card = document.createElement('div');
                         card.className = 'spot-card';
                         
-                        // 處理預設圖片（防錯）
                         const imgUrl = item.ImageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500';
                         
-                        // 判斷是否顯示 IG 按鈕
-                        const igButtonHtml = item.InstagramLink 
-                            ? `<a href="${item.InstagramLink}" target="_blank" class="ig-link-btn">📸 查看 Instagram</a>` 
+                        const igBtn = item.InstagramLink 
+                            ? `<a href="${item.InstagramLink}" target="_blank" class="link-btn btn-ig">📸 Instagram</a>` 
+                            : '';
+                        
+                        const mapBtn = item.OriginalLink 
+                            ? `<a href="${item.OriginalLink}" target="_blank" class="link-btn btn-map">📍 原始連結</a>` 
                             : '';
 
                         card.innerHTML = `
@@ -353,13 +485,16 @@
                                 <div class="spot-title">${item.Name || '未知名稱'}</div>
                                 <div class="spot-detail">
                                     <span class="label">⏰ 營業時間：</span>
-                                    <span class="value">${item.OpeningHours || '尚未提供'}</span>
+                                    <span class="value">${item.OpeningHours || '店家未提供'}</span>
                                 </div>
                                 <div class="spot-detail">
                                     <span class="label">📍 景點地址：</span>
-                                    <span class="value">${item.Address || '未知地址'}</span>
+                                    <span class="value">${item.Address || '未提供地址'}</span>
                                 </div>
-                                ${igButtonHtml}
+                                <div class="card-footer-btns">
+                                    ${mapBtn}
+                                    ${igBtn}
+                                </div>
                             </div>
                         `;
                         grid.appendChild(card);
@@ -370,7 +505,7 @@
             })
             .catch(err => {
                 console.error(err);
-                grid.innerHTML = '<div class="empty-message">無法載入資料，請確認 GAS 部署權限設定為「任何人」。</div>';
+                grid.innerHTML = '<div class="empty-message">系統忙碌中，請重新整理網頁再試。</div>';
             })
             .finally(() => {
                 loader.style.display = 'none';
