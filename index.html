@@ -191,7 +191,6 @@
         @media (min-width: 1400px) { .pool-grid { grid-template-columns: repeat(6, 1fr); } }
         @media (min-width: 1200px) and (max-width: 1399px) { .pool-grid { grid-template-columns: repeat(5, 1fr); } }
 
-        /* 直式卡片高度加高以容納投票區 */
         .spot-card {
             background: var(--card-bg);
             border-radius: 12px;
@@ -209,7 +208,6 @@
             box-shadow: 0 6px 16px rgba(0,0,0,0.08);
         }
 
-        /* 右上角積分勳章徽章 */
         .score-badge {
             position: absolute;
             top: 10px;
@@ -290,7 +288,6 @@
         .btn-ig { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; }
         .btn-map { background-color: #4285F4; color: white; }
 
-        /* 🚀 核心修改：三人群組投票打勾區 */
         .vote-section {
             margin-top: 12px;
             padding-top: 10px;
@@ -413,16 +410,10 @@
     </div>
 
     <script>
-        // 🔗 請換上你的 Google Apps Script 網頁應用程式網址
+        // 🔗 請換上你的 Google Apps Script 最新網頁應用程式網址
         const GAS_URL = "https://script.google.com/macros/s/AKfycbywOj8P2MeYQtBN5HLzE00eTUSFmpCRBWWNQkxvX6i590Vhp-nub_ll2knhQchzG6iZ/exec";
 
-        const REGION_ORDER = [
-            "濟州北部",
-            "濟州東部",
-            "濟州西部",
-            "濟州南部",
-            "濟州離島牛島"
-        ];
+        const REGION_ORDER = ["濟州北部", "濟州東部", "濟州西部", "濟州南部", "濟州離島牛島"];
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -436,10 +427,7 @@
                 if(tabId === 'tab1') btns[0].classList.add('active');
                 if(tabId === 'tab2') btns[1].classList.add('active');
             }
-
-            if (tabId === 'tab2') {
-                fetchWishlist();
-            }
+            if (tabId === 'tab2') { fetchWishlist(); }
         }
 
         function checkUrl() {
@@ -521,13 +509,12 @@
             .finally(() => { submitBtn.disabled = false; });
         }
 
-        // 🚀 執行即時更新投票狀態至後端
-        function updateVote(rowId, name) {
+        // 🚀 執行即時更新打勾狀態
+        function updateVote(rowId) {
             const cbYoyo = document.getElementById(`cb-yoyo-${rowId}`).checked;
             const cbCatherine = document.getElementById(`cb-cath-${rowId}`).checked;
             const cbLisa = document.getElementById(`cb-lisa-${rowId}`).checked;
             
-            // 計算即時總分並更新網頁徽章
             let score = (cbYoyo?1:0) + (cbCatherine?1:0) + (cbLisa?1:0);
             document.getElementById(`badge-${rowId}`).innerText = `🔥 得分: ${score}分`;
 
@@ -543,8 +530,8 @@
                 })
             })
             .then(res => res.json())
-            .then(res => { if(res.status !== 'success') console.error('投票同步失敗'); })
-            .catch(err => console.error('網路連線失敗', err));
+            .then(res => { if(res.status !== 'success') console.error('同步至 Google Sheet 失敗'); })
+            .catch(err => console.error('網路錯誤', err));
         }
 
         function fetchWishlist() {
@@ -557,23 +544,19 @@
             .then(res => res.json())
             .then(res => {
                 if (res.status === 'success' && res.data.length > 0) {
-                    
                     const groups = {};
                     
-                    res.data.forEach(item => {
-                        let rawRegion = item.Region || item.region || item.分區 || ''; 
-                        let region = rawRegion.toString().trim();
-                        if (!region) region = '其他地區';
-                        
+                    // 排除可能誤抓的第一列純欄位標題文字（如果有手動補標題的話）
+                    const validData = res.data.filter(item => item.OriginalLink !== "OriginalLink" && item.Name !== "Name");
+
+                    validData.forEach(item => {
+                        let region = item.Region ? item.Region.toString().trim() : '其他地區';
                         if (!groups[region]) groups[region] = [];
                         
-                        // 🚀 計算每張卡片的總積分（打勾一個得1分，最高3分）
                         item.totalScore = (item.v_yoyo?1:0) + (item.v_catherine?1:0) + (item.v_lisa?1:0);
-                        
                         groups[region].push(item);
                     });
 
-                    // 依序排列渲染
                     let orderedRegions = REGION_ORDER.filter(r => groups[r]);
                     Object.keys(groups).forEach(r => {
                         if (!orderedRegions.includes(r)) orderedRegions.push(r);
@@ -591,43 +574,39 @@
                         const grid = document.createElement('div');
                         grid.className = 'pool-grid';
                         
-                        // 🚀 核心巨變：按照積分從高到低（3分 ➔ 2分 ➔ 1分 ➔ 0分）進行排序！
-                        // 如果分數一樣，則保持原本的新舊順序
+                        // 依照總分降序排列
                         const sortedItems = [...groups[regionName]].sort((a, b) => b.totalScore - a.totalScore);
                         
                         sortedItems.forEach(item => {
                             const card = document.createElement('div');
                             card.className = 'spot-card';
                             
-                            const imgUrl = item.ImageUrl || item.imageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500';
-                            const igBtn = (item.InstagramLink || item.instagramLink) ? `<a href="${item.InstagramLink || item.instagramLink}" target="_blank" class="link-btn btn-ig">📸 IG</a>` : '';
-                            const mapBtn = (item.OriginalLink || item.originalLink) ? `<a href="${item.OriginalLink || item.originalLink}" target="_blank" class="link-btn btn-map">🔗 連結</a>` : '';
+                            const imgUrl = item.ImageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500';
+                            const igBtn = item.InstagramLink ? `<a href="${item.InstagramLink}" target="_blank" class="link-btn btn-ig">📸 IG</a>` : '';
+                            const mapBtn = item.OriginalLink ? `<a href="${item.OriginalLink}" target="_blank" class="link-btn btn-map">🔗 連結</a>` : '';
 
                             card.innerHTML = `
                                 <div class="score-badge" id="badge-${item.rowId}">🔥 得分: ${item.totalScore}分</div>
-                                
-                                <img class="spot-img" src="${imgUrl}" alt="${item.Name || item.name}" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500'">
+                                <img class="spot-img" src="${imgUrl}" alt="${item.Name}" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500'">
                                 <div class="spot-info">
-                                    <div class="spot-title" title="${item.Name || item.name}">${item.Name || item.name || '未知名稱'}</div>
-                                    <div class="spot-detail"><span class="label">⏰ 營業：</span><span class="value" title="${item.OpeningHours || item.openingHours}">${item.OpeningHours || item.openingHours || '店家未提供'}</span></div>
-                                    <div class="spot-detail"><span class="label">📍 地址：</span><span class="value" title="${item.Address || item.address}">${item.Address || item.address || '未提供詳細地址'}</span></div>
-                                    
+                                    <div class="spot-title" title="${item.Name}">${item.Name}</div>
+                                    <div class="spot-detail"><span class="label">⏰ 營業：</span><span class="value" title="${item.OpeningHours}">${item.OpeningHours}</span></div>
+                                    <div class="spot-detail"><span class="label">📍 地址：</span><span class="value" title="${item.Address}">${item.Address}</span></div>
                                     <div class="card-footer-btns">
                                         ${mapBtn}
                                         ${igBtn}
                                     </div>
-                                    
                                     <div class="vote-section">
                                         <div class="vote-title">誰想去這？</div>
                                         <div class="vote-options">
                                             <label class="vote-item">
-                                                <input type="checkbox" id="cb-yoyo-${item.rowId}" ${item.v_yoyo ? 'checked' : ''} onchange="updateVote(${item.rowId}, 'yoyo')"> Yoyo
+                                                <input type="checkbox" id="cb-yoyo-${item.rowId}" ${item.v_yoyo ? 'checked' : ''} onchange="updateVote(${item.rowId})"> Yoyo
                                             </label>
                                             <label class="vote-item">
-                                                <input type="checkbox" id="cb-cath-${item.rowId}" ${item.v_v_catherine || item.v_catherine ? 'checked' : ''} onchange="updateVote(${item.rowId}, 'catherine')"> Cath
+                                                <input type="checkbox" id="cb-cath-${item.rowId}" ${item.v_catherine ? 'checked' : ''} onchange="updateVote(${item.rowId})"> Cath
                                             </label>
                                             <label class="vote-item">
-                                                <input type="checkbox" id="cb-lisa-${item.rowId}" ${item.v_lisa ? 'checked' : ''} onchange="updateVote(${item.rowId}, 'lisa')"> Lisa
+                                                <input type="checkbox" id="cb-lisa-${item.rowId}" ${item.v_lisa ? 'checked' : ''} onchange="updateVote(${item.rowId})"> Lisa
                                             </label>
                                         </div>
                                     </div>
@@ -635,7 +614,6 @@
                             `;
                             grid.appendChild(card);
                         });
-                        
                         groupSection.appendChild(grid);
                         container.appendChild(groupSection);
                     });
