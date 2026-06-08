@@ -314,7 +314,7 @@
 
     <div class="tabs-container">
         <button class="tab-btn active" onclick="switchTab('tab1')">我要許願</button>
-        <button class="tab-btn" onclick="window.location.reload(); switchTab('tab2')">許願池清單</button>
+        <button class="tab-btn" onclick="switchTab('tab2')">許願池清單</button>
     </div>
 
     <div class="content-container">
@@ -369,7 +369,7 @@
     </div>
 
     <script>
-        // 🔗 換上你的 Google Apps Script 網頁應用程式網址
+        // 🔗 請換上你的 Google Apps Script 網頁應用程式網址
         const GAS_URL = "https://script.google.com/macros/s/AKfycbywOj8P2MeYQtBN5HLzE00eTUSFmpCRBWWNQkxvX6i590Vhp-nub_ll2knhQchzG6iZ/exec";
 
         function switchTab(tabId) {
@@ -377,7 +377,16 @@
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             
             document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+            
+            // 修正：更安全的 class 切換方式
+            if(event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            } else {
+                // 如果是手動觸發跳轉，找出對應的按鈕加上 active
+                const btns = document.querySelectorAll('.tab-btn');
+                if(tabId === 'tab1') btns[0].classList.add('active');
+                if(tabId === 'tab2') btns[1].classList.add('active');
+            }
 
             if (tabId === 'tab2') {
                 fetchWishlist();
@@ -414,7 +423,7 @@
                     document.getElementById('editAddress').value = data.Address === '未知地址' ? '' : data.Address;
                     document.getElementById('editImageUrl').value = data.ImageUrl.includes('unsplash') ? '' : data.ImageUrl;
                     document.getElementById('editIgLink').value = data.InstagramLink || (url.includes('instagram.com') ? url : '');
-                    document.getElementById('editRegion').value = ''; // 讓使用者填寫
+                    document.getElementById('editRegion').value = '';
                     manualSection.style.display = 'block';
                     manualSection.scrollIntoView({ behavior: 'smooth' });
                 } else {
@@ -451,7 +460,7 @@
                 address: document.getElementById('editAddress').value.trim() || '未提供詳細地址',
                 imageUrl: document.getElementById('editImageUrl').value.trim() || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500',
                 instagramLink: document.getElementById('editIgLink').value.trim(),
-                region: regionVal // 🚀 送往後端寫入 G 欄
+                region: regionVal
             };
 
             submitBtn.disabled = true;
@@ -465,6 +474,7 @@
                 alert('🎉 成功加入許願池清單！');
                 document.getElementById('spotUrl').value = '';
                 document.getElementById('manualSection').style.display = 'none';
+                // 提交成功後，自動導向 Tab 2
                 switchTab('tab2');
             })
             .catch(err => {
@@ -476,7 +486,6 @@
             });
         }
 
-        // 🚀 核心優化：直接讀取試算表中的 Region（G 欄）進行分類群組
         function fetchWishlist() {
             const container = document.getElementById('poolContainer');
             const loader = document.getElementById('listLoading');
@@ -491,7 +500,6 @@
                     const groups = {};
                     
                     res.data.forEach(item => {
-                        // 🚀 讀取試算表中對應的 Region 欄位資料（若留空則歸類到其他地區）
                         let region = item.Region ? item.Region.trim() : '其他地區';
                         if (!region) region = '其他地區';
                         
@@ -501,7 +509,7 @@
                         groups[region].push(item);
                     });
 
-                    // 渲染群組
+                    // 依據 G 欄填寫的名稱排序渲染各區
                     Object.keys(groups).sort().forEach(regionName => {
                         const groupSection = document.createElement('div');
                         groupSection.className = 'region-group';
@@ -514,6 +522,7 @@
                         const grid = document.createElement('div');
                         grid.className = 'pool-grid';
                         
+                        // 讓同分區內最新加入的景點排在最前面
                         groups[regionName].reverse().forEach(item => {
                             const card = document.createElement('div');
                             card.className = 'spot-card';
