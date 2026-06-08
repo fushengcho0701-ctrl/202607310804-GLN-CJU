@@ -13,6 +13,7 @@
             --text-color: #2f3e46;
             --text-light: #6c757d;
             --border-color: #e0e0e0;
+            --group-bg: #eef5f1;
         }
 
         * {
@@ -25,7 +26,7 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            line-height: 1.6;
+            line-height: 1.5;
             padding-bottom: 60px;
         }
 
@@ -33,12 +34,12 @@
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
             text-align: center;
-            padding: 40px 20px;
+            padding: 35px 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
         header h1 {
-            font-size: 24px;
+            font-size: 26px;
             margin-bottom: 8px;
             letter-spacing: 1px;
         }
@@ -49,7 +50,7 @@
         }
 
         .tabs-container {
-            max-width: 800px;
+            max-width: 1400px;
             margin: 20px auto 0 auto;
             display: flex;
             background: #ededed;
@@ -78,7 +79,7 @@
         }
 
         .content-container {
-            max-width: 800px;
+            max-width: 1600px; /* 加寬貨架，容納更多直式卡片 */
             margin: 20px auto;
             padding: 0 16px;
         }
@@ -91,8 +92,10 @@
             display: block;
         }
 
-        /* 表單與修正區域 */
+        /* 表單樣式 */
         .wish-form-card {
+            max-width: 700px;
+            margin: 0 auto;
             background: var(--card-bg);
             padding: 30px 20px;
             border-radius: 12px;
@@ -150,12 +153,6 @@
             background: #3b6347;
         }
 
-        .action-btn:disabled {
-            background: #a5c4ae;
-            cursor: not-allowed;
-        }
-
-        /* 手動修正表單區（預設隱藏） */
         .manual-edit-section {
             display: none;
             margin-top: 25px;
@@ -170,71 +167,123 @@
             text-align: center;
         }
 
-        /* 列表卡片樣式 */
+        /* 地區分組標題樣式 */
+        .region-group {
+            margin-bottom: 40px;
+        }
+
+        .region-header {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 6px rgba(74, 124, 89, 0.2);
+        }
+
+        /* 網格佈局：核心修改（一排 5 ~ 6 張直式卡片） */
+        .pool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); /* 自動塞滿，極限每張最窄230px */
+            gap: 20px;
+        }
+
+        /* 在超大螢幕 (如電腦) 鎖定為一排最少 5 張，最多 6 張 */
+        @media (min-width: 1400px) {
+            .pool-grid {
+                grid-template-columns: repeat(6, 1fr); 
+            }
+        }
+        @media (min-width: 1200px) and (max-width: 1399px) {
+            .pool-grid {
+                grid-template-columns: repeat(5, 1fr); 
+            }
+        }
+
+        /* 直式卡片設計 */
         .spot-card {
             background: var(--card-bg);
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            margin-bottom: 24px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
             border: 1px solid #f0e9df;
+            display: flex;
+            flex-direction: column; /* 讓內容垂直往下長 */
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
+        .spot-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        }
+
+        /* 直式卡片專屬：固定高度、1:1 或接近黃金比例的圖片 */
         .spot-img {
             width: 100%;
-            height: 240px;
+            height: 180px; 
             object-fit: cover;
             background-color: #eaeaea;
         }
 
         .spot-info {
-            padding: 20px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            flex: 1; /* 撐開高度，使按鈕對齊底部 */
         }
 
         .spot-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             color: var(--text-color);
+            /* 超過兩行自動省略號 */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 44px; /* 固定高度防止卡片高低不一 */
         }
 
         .spot-detail {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-light);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             display: flex;
             align-items: flex-start;
         }
 
         .spot-detail span.label {
             font-weight: bold;
-            min-width: 80px;
+            min-width: 65px;
             color: var(--primary-color);
         }
 
         .spot-detail span.value {
             flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; /* 精簡直式欄位，超出範圍就省略 */
         }
 
         .card-footer-btns {
-            margin-top: 15px;
+            margin-top: auto; /* 將按鈕推至最底部 */
+            padding-top: 10px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .link-btn {
             flex: 1;
-            padding: 10px;
+            padding: 8px 4px;
             text-decoration: none;
             border-radius: 6px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
             text-align: center;
-            transition: opacity 0.2s;
-        }
-
-        .link-btn:hover {
-            opacity: 0.9;
         }
 
         .btn-ig {
@@ -275,7 +324,7 @@
 
     <header>
         <h1>✨ 景點許願池 ✨</h1>
-        <p>丟入 Google Maps / Naver / IG 連結，自由編輯與收藏想去的好地方</p>
+        <p>貼上連結、自由微調，自動按地區為你分類好所有想去的地方</p>
     </header>
 
     <div class="tabs-container">
@@ -296,32 +345,26 @@
 
                 <div class="manual-edit-section" id="manualSection">
                     <h3>💡 第二步：確認或修正景點資料</h3>
-                    
                     <div class="input-group">
                         <label>景點名稱：</label>
                         <input type="text" id="editName" placeholder="例如：海之日咖啡廳 Haejigae">
                     </div>
-                    
                     <div class="input-group">
                         <label>營業時間：</label>
                         <input type="text" id="editHours" placeholder="例如：09:00 - 21:00 / 全年無休">
                     </div>
-                    
                     <div class="input-group">
-                        <label>景點地址：</label>
-                        <input type="text" id="editAddress" placeholder="例如：濟州島涯月邑...">
+                        <label>景點地址（請務必包含縣市/地區名，以便自動分類）：</label>
+                        <input type="text" id="editAddress" placeholder="例如：濟州市涯月邑... 或 台北市信義區...">
                     </div>
-                    
                     <div class="input-group">
-                        <label>精選圖片網址（可留空使用預設圖）：</label>
+                        <label>精選圖片網址（可留空）：</label>
                         <input type="url" id="editImageUrl" placeholder="請貼上圖片的網址 URL...">
                     </div>
-
                     <div class="input-group">
                         <label>Instagram 連結（選填）：</label>
                         <input type="url" id="editIgLink" placeholder="如果有 IG 連結請貼在這裡...">
                     </div>
-
                     <button class="action-btn" id="submitBtn" onclick="submitFinalWish()" style="background-color: #b87d4b;">🎉 確認投進許願池</button>
                 </div>
             </div>
@@ -329,13 +372,14 @@
 
         <div id="tab2" class="tab-content">
             <div class="loading-spinner" id="listLoading" style="display: block;"></div>
-            <div class="pool-grid" id="poolGrid"></div>
+            <div id="poolContainer">
+                </div>
         </div>
 
     </div>
 
     <script>
-        // 🔗 你的 Google Apps Script 網頁應用程式網址
+        // 🔗 換上你的 Google Apps Script 網頁應用程式網址
         const GAS_URL = "https://script.google.com/macros/s/AKfycbywOj8P2MeYQtBN5HLzE00eTUSFmpCRBWWNQkxvX6i590Vhp-nub_ll2knhQchzG6iZ/exec";
 
         function switchTab(tabId) {
@@ -350,7 +394,6 @@
             }
         }
 
-        // 檢查網址並抓取預覽
         function checkUrl() {
             const urlInput = document.getElementById('spotUrl');
             const url = urlInput.value.trim();
@@ -367,37 +410,27 @@
             loader.style.display = 'block';
             manualSection.style.display = 'none';
 
-            // 發送預覽請求給後端 GAS
             fetch(GAS_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'text/plain' }, // 避免 CORS 預檢問題
+                headers: { 'Content-Type': 'text/plain' },
                 body: JSON.stringify({ action: 'preview', url: url })
             })
             .then(res => res.json())
             .then(res => {
                 if (res.status === 'success') {
                     const data = res.data;
-                    // 將後端抓到的不完美資料塞進輸入框，讓使用者可以直接手動改掉！
                     document.getElementById('editName').value = data.Name === '未知名稱' ? '' : data.Name;
                     document.getElementById('editHours').value = data.OpeningHours === '尚未提供' ? '' : data.OpeningHours;
                     document.getElementById('editAddress').value = data.Address === '未知地址' ? '' : data.Address;
                     document.getElementById('editImageUrl').value = data.ImageUrl.includes('unsplash') ? '' : data.ImageUrl;
                     document.getElementById('editIgLink').value = data.InstagramLink || (url.includes('instagram.com') ? url : '');
-                    
-                    // 展開修正區
                     manualSection.style.display = 'block';
-                    // 滾動到修正區
                     manualSection.scrollIntoView({ behavior: 'smooth' });
                 } else {
-                    alert('讀取失敗，但沒關係！已為你開啟手動輸入欄位。');
                     openEmptyManualSection(url);
                 }
             })
-            .catch(err => {
-                console.error(err);
-                // 網路失敗或跨網域時，依然允許使用者直接手動填寫
-                openEmptyManualSection(url);
-            })
+            .catch(() => openEmptyManualSection(url))
             .finally(() => {
                 checkBtn.disabled = false;
                 loader.style.display = 'none';
@@ -413,17 +446,16 @@
             document.getElementById('manualSection').style.display = 'block';
         }
 
-        // 送出最終修正完的資料
         function submitFinalWish() {
             const submitBtn = document.getElementById('submitBtn');
             const url = document.getElementById('spotUrl').value.trim();
             
             const finalData = {
-                isManualSubmit: true, // 告訴後端：不要再自己亂爬了，用我傳過去的資料就好
+                isManualSubmit: true,
                 url: url,
                 name: document.getElementById('editName').value.trim() || '未命名美景',
                 openingHours: document.getElementById('editHours').value.trim() || '店家未提供',
-                address: document.getElementById('editAddress').value.trim() || '請點連結查看地圖',
+                address: document.getElementById('editAddress').value.trim() || '未提供詳細地址',
                 imageUrl: document.getElementById('editImageUrl').value.trim() || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500',
                 instagramLink: document.getElementById('editIgLink').value.trim()
             };
@@ -437,10 +469,8 @@
             })
             .then(() => {
                 alert('🎉 成功加入許願池清單！');
-                // 清空表單
                 document.getElementById('spotUrl').value = '';
                 document.getElementById('manualSection').style.display = 'none';
-                // 自動跳轉到 Tab 2 觀看成果
                 switchTab('tab2');
             })
             .catch(err => {
@@ -452,60 +482,103 @@
             });
         }
 
-        // 讀取清單並顯示
+        // 核心邏輯：讀取清單、按地區歸類並以直式網格呈現
         function fetchWishlist() {
-            const grid = document.getElementById('poolGrid');
+            const container = document.getElementById('poolContainer');
             const loader = document.getElementById('listLoading');
-            grid.innerHTML = '';
+            container.innerHTML = '';
             loader.style.display = 'block';
 
             fetch(GAS_URL)
             .then(res => res.json())
             .then(res => {
                 if (res.status === 'success' && res.data.length > 0) {
-                    const reversedData = res.data.reverse();
                     
-                    reversedData.forEach(item => {
-                        const card = document.createElement('div');
-                        card.className = 'spot-card';
+                    // 1. 自動從地址中抽取出地區（如：台北市、新北市、濟州市、京都府）
+                    // 排序與分組邏輯
+                    const groups = {};
+                    
+                    res.data.forEach(item => {
+                        let region = '其他地區';
+                        const addr = item.Address || '';
                         
-                        const imgUrl = item.ImageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500';
+                        if (addr && addr !== '未知地址' && addr !== '請點連結查看地圖' && addr !== '未提供詳細地址') {
+                            // 去除前後空格並擷取開頭的前 3~4 個字（通常包含縣市名或韓國的島市邑名）
+                            const cleanAddr = addr.trim();
+                            // 簡單比對台灣縣市或外國常用字
+                            if (cleanAddr.length >= 3) {
+                                region = cleanAddr.substring(0, 3); // 擷取前三個字（如："제주제" -> 濟州、"台北市"）
+                                
+                                // 特殊修正：如果是韓國地址（如 제주제주시...），精簡為「濟州 (제주)」
+                                if (region.includes('제주')) region = '濟州島 (제주)';
+                                else if (region.includes('首爾') || region.includes('서울')) region = '首爾 (서울)';
+                                else if (region.includes('京都')) region = '京都';
+                            }
+                        }
                         
-                        const igBtn = item.InstagramLink 
-                            ? `<a href="${item.InstagramLink}" target="_blank" class="link-btn btn-ig">📸 Instagram</a>` 
-                            : '';
-                        
-                        const mapBtn = item.OriginalLink 
-                            ? `<a href="${item.OriginalLink}" target="_blank" class="link-btn btn-map">📍 原始連結</a>` 
-                            : '';
-
-                        card.innerHTML = `
-                            <img class="spot-img" src="${imgUrl}" alt="${item.Name}" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500'">
-                            <div class="spot-info">
-                                <div class="spot-title">${item.Name || '未知名稱'}</div>
-                                <div class="spot-detail">
-                                    <span class="label">⏰ 營業時間：</span>
-                                    <span class="value">${item.OpeningHours || '店家未提供'}</span>
-                                </div>
-                                <div class="spot-detail">
-                                    <span class="label">📍 景點地址：</span>
-                                    <span class="value">${item.Address || '未提供地址'}</span>
-                                </div>
-                                <div class="card-footer-btns">
-                                    ${mapBtn}
-                                    ${igBtn}
-                                </div>
-                            </div>
-                        `;
-                        grid.appendChild(card);
+                        if (!groups[region]) {
+                            groups[region] = [];
+                        }
+                        groups[region].push(item);
                     });
+
+                    // 2. 依序把每個地區的組別渲染出來
+                    Object.keys(groups).sort().forEach(regionName => {
+                        // 建立組別區塊
+                        const groupSection = document.createElement('div');
+                        groupSection.className = 'region-group';
+                        
+                        // 建立地區標題
+                        const header = document.createElement('div');
+                        header.className = 'region-header';
+                        header.innerText = `📍 ${regionName} (${groups[regionName].length})`;
+                        groupSection.appendChild(header);
+                        
+                        // 建立該地區的 5~6 欄直式卡片網格 (Grid)
+                        const grid = document.createElement('div');
+                        grid.className = 'pool-grid';
+                        
+                        // 塞入卡片（該地區最新加入的排在前面）
+                        groups[regionName].reverse().forEach(item => {
+                            const card = document.createElement('div');
+                            card.className = 'spot-card';
+                            
+                            const imgUrl = item.ImageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500';
+                            const igBtn = item.InstagramLink ? `<a href="${item.InstagramLink}" target="_blank" class="link-btn btn-ig">📸 IG</a>` : '';
+                            const mapBtn = item.OriginalLink ? `<a href="${item.OriginalLink}" target="_blank" class="link-btn btn-map">🔗 連結</a>` : '';
+
+                            card.innerHTML = `
+                                <img class="spot-img" src="${imgUrl}" alt="${item.Name}" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500'">
+                                <div class="spot-info">
+                                    <div class="spot-title" title="${item.Name}">${item.Name || '未知名稱'}</div>
+                                    <div class="spot-detail">
+                                        <span class="label">⏰ 營業：</span>
+                                        <span class="value" title="${item.OpeningHours}">${item.OpeningHours || '店家未提供'}</span>
+                                    </div>
+                                    <div class="spot-detail">
+                                        <span class="label">📍 地址：</span>
+                                        <span class="value" title="${item.Address}">${item.Address || '未提供詳細地址'}</span>
+                                    </div>
+                                    <div class="card-footer-btns">
+                                        ${mapBtn}
+                                        ${igBtn}
+                                    </div>
+                                </div>
+                            `;
+                            grid.appendChild(card);
+                        });
+                        
+                        groupSection.appendChild(grid);
+                        container.appendChild(groupSection);
+                    });
+
                 } else {
-                    grid.innerHTML = '<div class="empty-message">目前許願池空空如也，快去 Tab 1 許願吧！</div>';
+                    container.innerHTML = '<div class="empty-message">目前許願池空空如也，快去 Tab 1 許願吧！</div>';
                 }
             })
             .catch(err => {
                 console.error(err);
-                grid.innerHTML = '<div class="empty-message">系統忙碌中，請重新整理網頁再試。</div>';
+                container.innerHTML = '<div class="empty-message">系統忙碌中，請重新整理網頁再試。</div>';
             })
             .finally(() => {
                 loader.style.display = 'none';
