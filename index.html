@@ -509,7 +509,6 @@
             .finally(() => { submitBtn.disabled = false; });
         }
 
-        // 🚀 執行即時更新打勾狀態
         function updateVote(rowId) {
             const cbYoyo = document.getElementById(`cb-yoyo-${rowId}`).checked;
             const cbCatherine = document.getElementById(`cb-cath-${rowId}`).checked;
@@ -546,7 +545,6 @@
                 if (res.status === 'success' && res.data.length > 0) {
                     const groups = {};
                     
-                    // 排除可能誤抓的第一列純欄位標題文字（如果有手動補標題的話）
                     const validData = res.data.filter(item => item.OriginalLink !== "OriginalLink" && item.Name !== "Name");
 
                     validData.forEach(item => {
@@ -574,7 +572,6 @@
                         const grid = document.createElement('div');
                         grid.className = 'pool-grid';
                         
-                        // 依照總分降序排列
                         const sortedItems = [...groups[regionName]].sort((a, b) => b.totalScore - a.totalScore);
                         
                         sortedItems.forEach(item => {
